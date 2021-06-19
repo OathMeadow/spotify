@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  title: Spotify Records REST API
+  version: "1.0"
+  description: |
+    The Spotify REST API is a HTTP-based service used for retriving the most
+    played music records of year 2019.
+
+servers:
+  - url: https://localhost:8080/api/records
+    description: RECORDS
+    variables:
+      hostname:
+        default: localhost
+      port:
+        default: '8080'
+      basePath:
+        default: api/records
+
+paths:
+  /records:
+    get:
+      operationId: listRecords
+      summary: List Music Records
+      description: |
+        Returns a JSON array of music records that match the provided search parameters.
+        The array may be empty if no records are found.
+      tags:
+        - Records
+      parameters:
+        - name: var
+          in: query
+          description: |
+            The name of the variable to search for.
+
+            Possible parameters:
+            * rank: rank of the record
+            * artistName: name of the artist
+            * trackName:  name of the track
+            * genre: type of music genre
+            * length: length of the tack
+            * popularity: popilarity of the track
+
+          schema:
+            type: string
+
+        - name: value
+          in: query
+          description: |
+            The value of the variable to search for.
+          schema:
+            type: string
+
+      responses:
+        200:
+          description: OK - Returns an array of records.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Record"
+              example:
+                - rank: '25'
+                  artistName: Billie Eilish
+                  trackName: bad guy (with Justin Bieber)
+                  genre: electropop
+                  length: '195'
+                  popularity: '89'
+                - rank: '28'
+                  artistName: Ali Gatie
+                  trackName: It's You
+                  genre: canadian hip hop
+                  length: '213'
+                  popularity: '89'
+                - rank: '30'
+                  artistName: J Balvin
+                  trackName: QUE PRETENDES
+                  genre: latin
+                  length: '222'
+                  popularity: '89'
+        500:
+          description: Internal server error - An unexpected error occurred.
+  /records/{rank}:
+    get:
+      operationId: getRecord
+      summary: Record details of specific record
+      description: |
+        Returns information about the record with the provided rank id.
+      tags:
+        - Records
+      parameters:
+        - name: rank
+          in: path
+          description: Rank id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK - Returns details about the requested record.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Record"
+              example:
+                rank: '25'
+                artistName: Billie Eilish
+                trackName: bad guy (with Justin Bieber)
+                genre: electropop
+                length: '195'
+                popularity: '89'
+        404:
+          description: Record not found.
+        500:
+          description: Internal server error - An unexpected error occurred.
+
+
+components:
+  schemas:
+    Record:
+      type: object
+      description: Record details.
+      properties:
+        rank:
+          type: string
+          description: Rank ID of the record.
+
+        artistName:
+          type: string
+          description: The name of the artist
+
+        trackName:
+          type: string
+          description: Track name of the song
+
+        genre:
+          type: string
+          description: Type of genre of the record
+
+        length:
+          type: string
+          description: The play length
+
+        popularity:
+          type: string
+          description: Popularity rating of the track
