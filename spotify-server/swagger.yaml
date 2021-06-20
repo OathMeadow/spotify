@@ -79,6 +79,8 @@ paths:
                   genre: latin
                   length: '222'
                   popularity: '89'
+        400:
+          description: No such field
         500:
           description: Internal server error - An unexpected error occurred.
   /records/{rank}:
@@ -115,7 +117,6 @@ paths:
         500:
           description: Internal server error - An unexpected error occurred.
 
-
 components:
   schemas:
     Record:
@@ -125,7 +126,7 @@ components:
         rank:
           type: string
           description: Rank ID of the record.
-
+          
         artistName:
           type: string
           description: The name of the artist
@@ -140,7 +141,7 @@ components:
 
         length:
           type: string
-          description: The play length
+          description: The track play length
 
         popularity:
           type: string
