@@ -2,10 +2,7 @@ FROM openjdk:11
 
 ENV SERVER_HOME /usr/verticles
 
-RUN mkdir $SERVER_HOME && \
-    apt-get update && \
-    apt-get upgrade && \
-    apt-get install unzip
+RUN mkdir $SERVER_HOME
 
 COPY spotify.zip /tmp
 COPY docker-entrypoint.sh /usr/local/bin/

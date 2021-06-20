@@ -13,7 +13,7 @@ dependencies {
 group = "com.spotify"
 version = "1.0.0-SNAPSHOT"
 
-tasks.getByPath("build").finalizedBy("spotifyDistribution")
+tasks.docker.get().dependsOn("spotifyDistribution")
 tasks.register<Copy>("spotifyDistribution") {
     into("$buildDir/spotify")
     from(file(project(":spotify-server").buildDir.absolutePath + "/distributions")) {

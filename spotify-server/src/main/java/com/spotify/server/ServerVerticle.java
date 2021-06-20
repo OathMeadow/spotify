@@ -2,8 +2,11 @@ package com.spotify.server;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,17 +32,26 @@ public class ServerVerticle extends AbstractVerticle {
 	private static final String MEDIA_TYPE_APPLICATION_JSON = "application/json";
 	private static final int DEFAULT_PORT = 8080;
 
-	private static final String PARAM_PORT = "port";
-	private static final String PARAM_CSV_FILE = "csvFile";
+	private static final String PARAM_PORT = "PORT";
+	private static final String PARAM_CSV_FILE = "CSV_FILE";
 
 	private HttpServer server;
 	private MusicRecordCollection recordCollection;
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	private String getDefaultCsv() {
-		return Optional.ofNullable(ServerVerticle.class.getClassLoader().getResource("top50.csv"))
-				.map(URL::getFile)
-				.orElse("");
+		InputStream resource = ServerVerticle.class.getResourceAsStream("top50.csv");
+		if (resource == null) {
+			return "";
+		}
+		try (resource) {
+			Path dest = Path.of(Files.createTempDirectory("spotify").toString(), "top50.csv");
+			Files.copy(resource, dest);
+			return dest.toString();
+		} catch (IOException e) {
+			LOG.log(Level.WARNING, "Could not load default csv file: ", e.getMessage());
+		}
+		return "";
 	}
 
 	@Override
