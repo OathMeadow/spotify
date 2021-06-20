@@ -1,5 +1,3 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-import org.gradle.api.tasks.testing.logging.TestLogEvent.*
 
 plugins {
 	java
@@ -16,10 +14,16 @@ repositories {
 val vertxVersion = "4.1.0"
 val junitJupiterVersion = "5.7.2"
 
-val mainVerticleName = "com.spotify.server.MusicRecordVerticle"
+val mainVerticleName = "com.spotify.server.ServerVerticle"
 val watchForChange = "src/**/*"
 val doOnChange = "${projectDir}/gradlew classes"
 val launcherClassName = "io.vertx.core.Launcher"
+
+configurations {
+	compileOnly {
+		extendsFrom(annotationProcessor.get())
+	}
+}
 
 application {
 	mainClass.set(launcherClassName)
@@ -37,34 +41,21 @@ dependencies {
 	testImplementation("org.hamcrest:hamcrest-core:2.2")
 }
 
-java {
-	sourceCompatibility = JavaVersion.VERSION_11
-	targetCompatibility = JavaVersion.VERSION_11
-}
-
 tasks.withType<JavaExec> {
 	args = listOf("run", mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$launcherClassName", "--on-redeploy=$doOnChange")
-}
-
-tasks.withType<JavaCompile> {
-	options.encoding = "UTF-8"
 }
 
 tasks.distTar {
 	enabled = false
 }
 
-configurations {
-	compileOnly {
-		extendsFrom(annotationProcessor.get())
-	}
-}
-
-tasks.withType<Test> {
-	useJUnitPlatform()
-	testLogging {
-		showStandardStreams = true
-		exceptionFormat = FULL
-		events = setOf(PASSED, SKIPPED, FAILED)
+tasks.jar {
+	manifest {
+		attributes(
+				"Implementation-Title" to "Spotify record server",
+				"Implementation-Version" to archiveVersion,
+				"Main-Class" to launcherClassName,
+				"Main-Verticle" to mainVerticleName
+		)
 	}
 }

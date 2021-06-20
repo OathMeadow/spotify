@@ -67,8 +67,9 @@ and to run the container
 ```
 
 ## REST API
-You can look at the swagger.yaml to see the documentation.
-See below for some curl examples:
+You can look at the swagger.yaml to see the
+REST API documentation. See below for some
+curl examples:
 
 
 List all records
@@ -85,3 +86,12 @@ List all records with a certain popularity
 ```
 > curl -v http://localhost:8080/api/records?var=popularity&value=89
 ```
+
+Below is a list of valid var values:
+
+* rank
+* artistName
+* trackName
+* genre
+* length
+* popularity

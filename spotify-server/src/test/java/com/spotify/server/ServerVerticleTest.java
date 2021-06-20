@@ -172,4 +172,24 @@ public class ServerVerticleTest {
 					testContext.completeNow();
 				})));
 	}
+
+	@Test
+	void shouldNotFetchRecordWhenBadUri(Vertx vertx, VertxTestContext testContext) {
+		HttpClient client = vertx.createHttpClient();
+		client.request(HttpMethod.GET, port, host, "/api/record")
+				.compose(req -> req.send().onComplete(testContext.succeeding(buffer -> testContext.verify(() -> {
+					assertEquals(404, buffer.statusCode());
+					testContext.completeNow();
+				}))));
+	}
+
+	@Test
+	void shouldNotFetchRecordWhenUsingIllegalVar(Vertx vertx, VertxTestContext testContext) {
+		HttpClient client = vertx.createHttpClient();
+		client.request(HttpMethod.GET, port, host, "/api/records?var=ranking&value=1")
+				.compose(req -> req.send().onComplete(testContext.succeeding(buffer -> testContext.verify(() -> {
+					assertEquals(400, buffer.statusCode());
+					testContext.completeNow();
+				}))));
+	}
 }
